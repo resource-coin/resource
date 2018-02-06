@@ -17,8 +17,6 @@ contract owned {
     }
 }
 
-interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
-
 contract TokenERC20 {
     // Public variables of the token
     string public name;
@@ -138,7 +136,7 @@ contract TokenERC20 {
      *
      * @param _value the amount of money to Eliminate
      */
-    function Eliminate(uint256 _value) public returns (bool success) {
+    function eliminate(uint256 _value) public returns (bool success) {
         require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
@@ -154,12 +152,12 @@ contract TokenERC20 {
      * @param _from the address of the sender
      * @param _value the amount of money to Eliminate
      */
-    function EliminateFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] >= _value);                        // Check if the targeted balance is enough
-        require(_value <= allowanceEliminate[_from][msg.sender]);   // Check allowance
-        balanceOf[_from] -= _value;                                 // Subtract from the targeted balance
-        allowanceEliminate[_from][msg.sender] -= _value;            // Subtract from the sender's allowance
-        totalSupply -= _value;                                      // Update totalSupply
+    function eliminateFrom(address _from, uint256 _value) public returns (bool success) {
+        require(balanceOf[_from] >= _value);                    // Check if the targeted balance is enough
+        require(_value <= allowanceEliminate[_from][msg.sender]);    // Check allowance
+        balanceOf[_from] -= _value;                             // Subtract from the targeted balance
+        allowanceEliminate[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
+        totalSupply -= _value;                                  // Update totalSupply
         Eliminate(_from, _value);
         return true;
     }
@@ -191,16 +189,16 @@ contract RESToken is owned, TokenERC20 {
 
     /// @notice Buy tokens from contract by sending ether
     function buy() payable public {
-        uint amount = msg.value / buyPrice;               // calculates the amount
+        uint amount = msg.value / 1000 / buyPrice;        // calculates the amount (1 eth = 1000 finney)
         _transfer(this, msg.sender, amount);              // makes the transfers
     }
 
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(this.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
-        _transfer(msg.sender, this, amount);              // makes the transfers
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
+        require(this.balance >= amount * sellPrice / 1000); // checks if the contract has enough ether to buy
+        _transfer(msg.sender, this, amount);                // makes the transfers
+        msg.sender.transfer(amount * sellPrice / 1000);     // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
     
 }
