@@ -169,7 +169,7 @@ contract TokenERC20 {
     }
 }
 
-contract ResToken is owned, TokenERC20 {
+contract RESToken is owned, TokenERC20 {
 
     uint256 public sellPrice;
     uint256 public buyPrice;
@@ -180,7 +180,7 @@ contract ResToken is owned, TokenERC20 {
     event FrozenFunds(address target, bool frozen);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
-    function MyAdvancedToken(
+    function RESToken(
         uint256 initialSupply,
         string tokenName,
         string tokenSymbol
