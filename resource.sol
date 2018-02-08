@@ -183,13 +183,13 @@ contract RESToken is owned, TokenERC20 {
 
     /// @notice update the price based on the remaining count of resources
     function updatePrice() public {
-        sellPrice = initialSellPrice * initialSupply / totalSupply;
-        buyPrice = initialBuyPrice * initialSupply / totalSupply;
+        sellPrice = initialSellPrice * initialSupply * (10 ** uint256(decimals)) / totalSupply;
+        buyPrice = initialBuyPrice * initialSupply * (10 ** uint256(decimals)) / totalSupply;
     }
 
     /// @notice Buy tokens from contract by sending ether
     function buy() payable public {
-        uint amount = msg.value / 1000 / buyPrice;        // calculates the amount (1 eth = 1000 finney)
+        uint amount = msg.value * 1000 / buyPrice;        // calculates the amount (1 eth == 1000 finney)
         _transfer(this, msg.sender, amount);              // makes the transfers
     }
 
@@ -199,6 +199,5 @@ contract RESToken is owned, TokenERC20 {
         require(this.balance >= amount * sellPrice / 1000); // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, amount);                // makes the transfers
         msg.sender.transfer(amount * sellPrice / 1000);     // sends ether to the seller. It's important to do this last to avoid recursion attacks
-    }
-    
+    }   
 }
